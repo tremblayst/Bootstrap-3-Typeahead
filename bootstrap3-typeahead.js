@@ -68,6 +68,7 @@
     this.afterSelect = this.options.afterSelect;
     this.addItem = false;
     this.value = this.$element.val() || this.$element.text();
+    this.closeOnNextRender = false;
   };
 
   Typeahead.prototype = {
@@ -297,6 +298,7 @@
           i.addClass('active');
           self.$element.data('active', item);
           activeFound = true;
+           
         }
         return i[0];
       });
@@ -306,6 +308,11 @@
         this.$element.data('active', items.first().data('value'));
       }
       this.$menu.html(items);
+        
+      if (activeFound && this.closeOnNextRender)
+      {
+          this.select();    
+      }
       return this;
     },
 
@@ -428,6 +435,13 @@
       if (this.value !== currentValue) {
         this.value = currentValue;
         this.lookup();
+      }
+    },  
+    trySelect: function (val) {
+      if (this.value !== val) {
+        this.closeOnNextRender = true;
+        this.value = val;
+        this.lookup(val);
       }
     },
 
