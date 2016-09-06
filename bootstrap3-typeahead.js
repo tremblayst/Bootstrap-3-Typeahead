@@ -91,7 +91,7 @@
           .change();
         this.afterSelect(newVal);
       }
-      return this.hide();
+      return this;//.hide();
     },
 
     updater: function (item) {
@@ -145,6 +145,13 @@
       }
     
       this.shown = true;
+      if(this.closeOnNextRender)
+      {
+          this.closeOnNextRender = false;
+          this.$menu.hide();
+          this.shown = false;
+      }
+        
       return this;
     },
 
@@ -311,7 +318,7 @@
         
       if (activeFound && this.closeOnNextRender)
       {
-          this.select();    
+          this.select();
       }
       return this;
     },
@@ -437,11 +444,12 @@
         this.lookup();
       }
     },  
-    trySelect: function (val) {
+    trySelect: function () {
+        var val = this.$element.val();
       if (this.value !== val) {
         this.closeOnNextRender = true;
         this.value = val;
-        this.lookup(val);
+        this.lookup("");
       }
     },
 
@@ -475,13 +483,13 @@
     focus: function (e) {
       if (!this.focused) {
         this.focused = true;
-        if (this.options.showHintOnFocus && this.skipShowHintOnFocus !== true) {
+       // if (this.options.showHintOnFocus && this.skipShowHintOnFocus !== true) {
           if(this.options.showHintOnFocus === "all") {
             this.lookup(""); 
           } else {
             this.lookup();
           }
-        }
+       // }
       }
       if (this.skipShowHintOnFocus) {
         this.skipShowHintOnFocus = false;
@@ -489,24 +497,28 @@
     },
 
     blur: function (e) {
-      if (!this.mousedover && !this.mouseddown && this.shown) {
-        this.hide();
+      //if (!this.mousedover && !this.mouseddown && this.shown) {
         this.focused = false;
-      } else if (this.mouseddown) {
+        if (!this.mousedover && this.shown)
+        {
+                this.hide();
+        }
+        
+      //} else if (this.mouseddown) {
         // This is for IE that blurs the input when user clicks on scroll.
         // We set the focus back on the input and prevent the lookup to occur again
-        this.skipShowHintOnFocus = true;
-        this.$element.focus();
-        this.mouseddown = false;
-      } 
+      //  this.skipShowHintOnFocus = true;
+      //  this.$element.focus();
+      //  this.mouseddown = false;
+      //} 
     },
 
     click: function (e) {
       e.preventDefault();
       this.skipShowHintOnFocus = true;
       this.select();
-      this.$element.focus();
-      this.hide();
+      this.mousedover = false;
+      this.$element.blur();
     },
 
     mouseenter: function (e) {
